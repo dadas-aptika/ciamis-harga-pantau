@@ -71,18 +71,20 @@ const Dashboard = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedMarket, setSelectedMarket] = useState("all");
   const [selectedCondition, setSelectedCondition] = useState("all");
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedPasar, setSelectedPasar] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
 
   const { data: apiData, isLoading, error } = usePriceData();
   
-  // Use API data if available, otherwise fallback to mock data
+  // Use API data if available, otherwise fallback to mock data - filter today only
   const priceData = useMemo(() => {
+    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+    
     if (apiData && apiData.length > 0) {
-      return apiData;
+      return apiData.filter(item => item.tanggal === today);
     }
-    return mockData;
+    return mockData.filter(item => item.tanggal === today);
   }, [apiData]);
 
   // Get unique markets from data
@@ -91,35 +93,6 @@ const Dashboard = () => {
     const uniqueMarkets = [...new Set(priceData.map(item => item?.nama_pasar).filter(Boolean))];
     return uniqueMarkets;
   }, [priceData]);
-
-  // Category mapping function
-  const getCategoryForProduct = (name: string): string => {
-    const productName = name?.toLowerCase() || "";
-    
-    if (productName.includes("beras") || productName.includes("tepung") || productName.includes("minyak")) {
-      return "beras";
-    }
-    if (productName.includes("bawang") || productName.includes("cabe") || productName.includes("garam")) {
-      return "bumbu-dasar";
-    }
-    if (productName.includes("daging") || productName.includes("ayam") || productName.includes("sapi")) {
-      return "daging";
-    }
-    if (productName.includes("ikan")) {
-      return "ikan";
-    }
-    if (productName.includes("buncis") || productName.includes("bunga kol") || productName.includes("sayur")) {
-      return "sayur";
-    }
-    if (productName.includes("blue band") || productName.includes("emping") || productName.includes("gas")) {
-      return "makanan-instan";
-    }
-    if (productName.includes("gula") || productName.includes("cengkeh")) {
-      return "bumbu-masak";
-    }
-    
-    return "tidak-dikat";
-  };
 
   const filteredData = useMemo(() => {
     if (!priceData || !Array.isArray(priceData)) {
@@ -132,12 +105,11 @@ const Dashboard = () => {
       const safeName = item?.nama || "";
       const matchesSearch = safeName.toLowerCase().includes(safeSearchQuery.toLowerCase());
       
-      // Market filter
+      // Market filter (first dropdown)
       const matchesMarket = selectedMarket === "all" || item?.nama_pasar === selectedMarket;
       
-      // Category filter
-      const itemCategory = getCategoryForProduct(item?.nama || "");
-      const matchesCategory = selectedCategory === "all" || itemCategory === selectedCategory;
+      // Pasar filter (tab filter)
+      const matchesPasar = selectedPasar === "all" || item?.nama_pasar === selectedPasar;
       
       // Calculate percentage change safely
       const currentPrice = item?.harga || 0;
@@ -152,9 +124,9 @@ const Dashboard = () => {
         (selectedCondition === "turun" && percentChange < 0) ||
         (selectedCondition === "tetap" && percentChange === 0);
       
-      return matchesSearch && matchesMarket && matchesCategory && matchesCondition;
+      return matchesSearch && matchesMarket && matchesPasar && matchesCondition;
     });
-  }, [priceData, searchQuery, selectedMarket, selectedCategory, selectedCondition]);
+  }, [priceData, searchQuery, selectedMarket, selectedPasar, selectedCondition]);
 
   // Pagination
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
@@ -212,8 +184,9 @@ const Dashboard = () => {
         </div>
 
         <CategoryTabs
-          selectedCategory={selectedCategory}
-          setSelectedCategory={setSelectedCategory}
+          selectedCategory={selectedPasar}
+          setSelectedCategory={setSelectedPasar}
+          markets={markets}
         />
 
         <div className="py-6">

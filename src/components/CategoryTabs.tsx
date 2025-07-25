@@ -3,28 +3,19 @@ import { Button } from "@/components/ui/button";
 interface CategoryTabsProps {
   selectedCategory: string;
   setSelectedCategory: (category: string) => void;
+  markets: string[];
 }
 
-const categories = [
-  { id: "all", label: "Semua" },
-  { id: "beras", label: "Beras, Tepung, Minyak" },
-  { id: "buah", label: "Buah" },
-  { id: "bumbu-dasar", label: "Bumbu Dasar" },
-  { id: "bumbu-masak", label: "Bumbu Masak" },
-  { id: "daging", label: "Daging" },
-  { id: "ikan", label: "Ikan" },
-  { id: "makanan-instan", label: "Makanan Instan" },
-  { id: "protein", label: "Protein" },
-  { id: "sayur", label: "Sayur" },
-  { id: "tidak-dikat", label: "Tidak dikat" }
-];
-
-const CategoryTabs = ({ selectedCategory, setSelectedCategory }: CategoryTabsProps) => {
+const CategoryTabs = ({ selectedCategory, setSelectedCategory, markets }: CategoryTabsProps) => {
+  const categories = [
+    { id: "all", label: "Semua Pasar" },
+    ...markets.map(market => ({ id: market, label: market }))
+  ];
   return (
     <div className="bg-white py-4 border-b">
       <div className="container mx-auto px-4">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium mr-4">Kategori</span>
+          <span className="text-sm font-medium mr-4">Pasar</span>
           <div className="flex flex-wrap gap-2">
             {categories.map((category) => (
               <Button

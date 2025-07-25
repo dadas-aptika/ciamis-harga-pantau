@@ -84,13 +84,20 @@ const ProductCard = ({
             <div className={`flex items-center gap-1 text-xs ${getTrendColor()}`}>
               {getTrendIcon()}
               <span className="font-medium">
-                {Math.abs(changePercent).toFixed(2)}% (Rp {formatChange(changeAmount)})
+                {changePercent > 0 ? '+' : ''}{changePercent.toFixed(2)}% (Rp {formatChange(changeAmount)})
               </span>
             </div>
           </div>
         </div>
         
+        {/* Price Chart with Percentage Label */}
         <div className={`mt-3 p-2 rounded ${getTrendBg()}`}>
+          <div className="flex justify-between items-center mb-1">
+            <span className="text-xs text-muted-foreground">Tren Harga</span>
+            <span className={`text-xs font-medium ${getTrendColor()}`}>
+              {changePercent > 0 ? '+' : ''}{changePercent.toFixed(1)}%
+            </span>
+          </div>
           <div className="h-8 w-full">
             {trendData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">

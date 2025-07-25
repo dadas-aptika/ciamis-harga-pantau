@@ -84,12 +84,21 @@ const Dashboard = () => {
   }, [apiData]);
 
   const filteredData = useMemo(() => {
+    if (!priceData || !Array.isArray(priceData)) {
+      return [];
+    }
+    
     return priceData.filter((item) => {
-      const matchesSearch = item.nama?.toLowerCase().includes(searchQuery.toLowerCase()) || false;
+      // Safe search query check
+      const safeSearchQuery = searchQuery || "";
+      const safeName = item?.nama || "";
+      const matchesSearch = safeName.toLowerCase().includes(safeSearchQuery.toLowerCase());
       
-      // Calculate percentage change
-      const percentChange = item.harga_sebelumnya > 0 
-        ? ((item.harga - item.harga_sebelumnya) / item.harga_sebelumnya) * 100 
+      // Calculate percentage change safely
+      const currentPrice = item?.harga || 0;
+      const previousPrice = item?.harga_sebelumnya || 0;
+      const percentChange = previousPrice > 0 
+        ? ((currentPrice - previousPrice) / previousPrice) * 100 
         : 0;
       
       const matchesCondition = 

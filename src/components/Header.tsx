@@ -1,0 +1,42 @@
+import { Search, ChevronDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+
+const Header = () => {
+  return (
+    <header className="bg-primary text-primary-foreground">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between py-4">
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-warning rounded flex items-center justify-center">
+                <span className="text-xs font-bold">📊</span>
+              </div>
+              <div>
+                <div className="text-xs opacity-80">DASHBOARD</div>
+                <div className="text-lg font-bold">JABAR</div>
+              </div>
+            </div>
+            <div className="hidden md:flex items-center space-x-1 text-sm">
+              <span className="bg-warning w-2 h-2 rounded-full"></span>
+              <span className="bg-white w-2 h-2 rounded-full opacity-60"></span>
+              <span className="bg-white w-2 h-2 rounded-full opacity-60"></span>
+            </div>
+          </div>
+          
+          <nav className="hidden md:flex items-center space-x-6 text-sm">
+            <button className="hover:opacity-80 flex items-center space-x-1">
+              <span>Topik</span>
+              <ChevronDown className="w-4 h-4" />
+            </button>
+            <button className="hover:opacity-80">Eksplorasi Dashboard</button>
+            <button className="hover:opacity-80">Tentang</button>
+            <button className="hover:opacity-80">Executive Dashboard</button>
+          </nav>
+        </div>
+      </div>
+    </header>
+  );
+};
+
+export default Header;

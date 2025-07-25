@@ -6,19 +6,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 interface FilterSectionProps {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
-  selectedLocation: string;
-  setSelectedLocation: (location: string) => void;
+  selectedMarket: string;
+  setSelectedMarket: (market: string) => void;
   selectedCondition: string;
   setSelectedCondition: (condition: string) => void;
+  markets: string[];
 }
 
 const FilterSection = ({
   searchQuery,
   setSearchQuery,
-  selectedLocation,
-  setSelectedLocation,
+  selectedMarket,
+  setSelectedMarket,
   selectedCondition,
-  setSelectedCondition
+  setSelectedCondition,
+  markets
 }: FilterSectionProps) => {
   return (
     <div className="bg-white py-6">
@@ -41,16 +43,16 @@ const FilterSection = ({
           
           <div className="flex items-center gap-4 w-full lg:w-auto">
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium whitespace-nowrap">Pilih Kota/Kabupaten</span>
-              <Select value={selectedLocation} onValueChange={setSelectedLocation}>
+              <span className="text-sm font-medium whitespace-nowrap">Pilih Pasar</span>
+              <Select value={selectedMarket} onValueChange={setSelectedMarket}>
                 <SelectTrigger className="w-48">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Semua Wilayah</SelectItem>
-                  <SelectItem value="ciamis">Ciamis</SelectItem>
-                  <SelectItem value="bandung">Bandung</SelectItem>
-                  <SelectItem value="bekasi">Bekasi</SelectItem>
+                  <SelectItem value="all">Semua Pasar</SelectItem>
+                  {markets.map((market) => (
+                    <SelectItem key={market} value={market}>{market}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

@@ -1,5 +1,6 @@
 import { TrendingUp, TrendingDown, Minus, Info } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { LineChart, Line, ResponsiveContainer } from 'recharts';
 
 interface ProductCardProps {
   id: number;
@@ -90,22 +91,40 @@ const ProductCard = ({
         </div>
         
         <div className={`mt-3 p-2 rounded ${getTrendBg()}`}>
-          <div className="h-8 flex items-end gap-1">
-            {trendData.slice(0, 10).map((value, index) => (
-              <div
-                key={index}
-                className={`flex-1 rounded-sm ${
-                  changePercent > 0 
-                    ? "bg-red-300" 
-                    : changePercent < 0 
-                    ? "bg-green-300" 
-                    : "bg-blue-300"
-                }`}
-                style={{ 
-                  height: `${Math.max(10, (value / Math.max(...trendData)) * 100)}%` 
-                }}
-              />
-            ))}
+          <div className="h-8 w-full">
+            {trendData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={trendData.map((value, index) => ({ value, index }))}>
+                  <Line 
+                    type="monotone" 
+                    dataKey="value" 
+                    stroke={changePercent > 0 ? "#ef4444" : changePercent < 0 ? "#22c55e" : "#3b82f6"}
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={[
+                  { value: 40, index: 0 },
+                  { value: 65, index: 1 },
+                  { value: 45, index: 2 },
+                  { value: 80, index: 3 },
+                  { value: 55, index: 4 },
+                  { value: 75, index: 5 },
+                  { value: 60, index: 6 }
+                ]}>
+                  <Line 
+                    type="monotone" 
+                    dataKey="value" 
+                    stroke={changePercent > 0 ? "#ef4444" : changePercent < 0 ? "#22c55e" : "#3b82f6"}
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </div>
       </CardContent>

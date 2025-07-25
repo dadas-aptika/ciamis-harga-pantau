@@ -69,9 +69,11 @@ const mockData = [
 
 const Dashboard = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedLocation, setSelectedLocation] = useState("all");
+  const [selectedMarket, setSelectedMarket] = useState("all");
   const [selectedCondition, setSelectedCondition] = useState("all");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9;
 
   const { data: apiData, isLoading, error } = usePriceData();
   
@@ -83,6 +85,42 @@ const Dashboard = () => {
     return mockData;
   }, [apiData]);
 
+  // Get unique markets from data
+  const markets = useMemo(() => {
+    if (!priceData || !Array.isArray(priceData)) return [];
+    const uniqueMarkets = [...new Set(priceData.map(item => item?.nama_pasar).filter(Boolean))];
+    return uniqueMarkets;
+  }, [priceData]);
+
+  // Category mapping function
+  const getCategoryForProduct = (name: string): string => {
+    const productName = name?.toLowerCase() || "";
+    
+    if (productName.includes("beras") || productName.includes("tepung") || productName.includes("minyak")) {
+      return "beras";
+    }
+    if (productName.includes("bawang") || productName.includes("cabe") || productName.includes("garam")) {
+      return "bumbu-dasar";
+    }
+    if (productName.includes("daging") || productName.includes("ayam") || productName.includes("sapi")) {
+      return "daging";
+    }
+    if (productName.includes("ikan")) {
+      return "ikan";
+    }
+    if (productName.includes("buncis") || productName.includes("bunga kol") || productName.includes("sayur")) {
+      return "sayur";
+    }
+    if (productName.includes("blue band") || productName.includes("emping") || productName.includes("gas")) {
+      return "makanan-instan";
+    }
+    if (productName.includes("gula") || productName.includes("cengkeh")) {
+      return "bumbu-masak";
+    }
+    
+    return "tidak-dikat";
+  };
+
   const filteredData = useMemo(() => {
     if (!priceData || !Array.isArray(priceData)) {
       return [];
@@ -93,6 +131,13 @@ const Dashboard = () => {
       const safeSearchQuery = searchQuery || "";
       const safeName = item?.nama || "";
       const matchesSearch = safeName.toLowerCase().includes(safeSearchQuery.toLowerCase());
+      
+      // Market filter
+      const matchesMarket = selectedMarket === "all" || item?.nama_pasar === selectedMarket;
+      
+      // Category filter
+      const itemCategory = getCategoryForProduct(item?.nama || "");
+      const matchesCategory = selectedCategory === "all" || itemCategory === selectedCategory;
       
       // Calculate percentage change safely
       const currentPrice = item?.harga || 0;
@@ -107,9 +152,16 @@ const Dashboard = () => {
         (selectedCondition === "turun" && percentChange < 0) ||
         (selectedCondition === "tetap" && percentChange === 0);
       
-      return matchesSearch && matchesCondition;
+      return matchesSearch && matchesMarket && matchesCategory && matchesCondition;
     });
-  }, [priceData, searchQuery, selectedCondition]);
+  }, [priceData, searchQuery, selectedMarket, selectedCategory, selectedCondition]);
+
+  // Pagination
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const paginatedData = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredData.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredData, currentPage]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -145,10 +197,11 @@ const Dashboard = () => {
         <FilterSection
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
-          selectedLocation={selectedLocation}
-          setSelectedLocation={setSelectedLocation}
+          selectedMarket={selectedMarket}
+          setSelectedMarket={setSelectedMarket}
           selectedCondition={selectedCondition}
           setSelectedCondition={setSelectedCondition}
+          markets={markets}
         />
 
         <div className="bg-primary/5 p-4 rounded-lg mb-6">
@@ -186,8 +239,9 @@ const Dashboard = () => {
               <p className="text-muted-foreground">Gagal memuat data. Menampilkan data contoh.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredData.map((item) => {
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {paginatedData.map((item) => {
                 // Calculate percentage and nominal change
                 const percentChange = item.harga_sebelumnya > 0 
                   ? ((item.harga - item.harga_sebelumnya) / item.harga_sebelumnya) * 100 
@@ -211,12 +265,50 @@ const Dashboard = () => {
                     image={imageUrl}
                     trendData={[]} // No trend data in API response
                   />
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+              
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex justify-center items-center gap-2 mt-8">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                  >
+                    Previous
+                  </Button>
+                  
+                  <div className="flex gap-1">
+                    {Array.from({ length: totalPages }, (_, i) => (
+                      <Button
+                        key={i + 1}
+                        variant={currentPage === i + 1 ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setCurrentPage(i + 1)}
+                        className="w-8 h-8 p-0"
+                      >
+                        {i + 1}
+                      </Button>
+                    ))}
+                  </div>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                  >
+                    Next
+                  </Button>
+                </div>
+              )}
+            </>
           )}
 
-          {filteredData.length === 0 && !isLoading && (
+          {paginatedData.length === 0 && !isLoading && (
             <div className="text-center py-12">
               <p className="text-muted-foreground">Tidak ada data yang sesuai dengan filter yang dipilih.</p>
             </div>

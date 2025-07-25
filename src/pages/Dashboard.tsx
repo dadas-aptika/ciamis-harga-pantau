@@ -8,61 +8,62 @@ import CategoryTabs from "@/components/CategoryTabs";
 import ProductCard from "@/components/ProductCard";
 import { usePriceData } from "@/hooks/useApi";
 
-// Mock data untuk fallback
+// Mock data untuk fallback dengan struktur API yang benar
 const mockData = [
   {
     id: 1,
-    komoditi: "Bawang Bombay",
-    satuan: "kg",
+    komoditi_id: 19,
+    nama: "Bawang Bombay",
+    foto: "komoditi/January2024/tepcwDcugMfllSYMBG7Y.jpg",
+    tanggal: "2025-07-25",
     harga: 39818,
-    perubahan_persen: 5.43,
-    perubahan_nominal: 2050,
-    trend_data: [35000, 36000, 37000, 38000, 39000, 39500, 39818]
+    harga_sebelumnya: 37768,
+    nama_satuan: "kg",
+    nama_pasar: "Pasar Kawali"
   },
   {
     id: 2,
-    komoditi: "Bawang Merah",
-    satuan: "kg",
+    komoditi_id: 16,
+    nama: "Bawang Merah",
+    foto: "komoditi/January2024/6XcZ2QyKBssfvmJ0ILxz.jpg",
+    tanggal: "2025-07-25",
     harga: 50872,
-    perubahan_persen: 4.71,
-    perubahan_nominal: 2290,
-    trend_data: [48000, 48500, 49000, 49500, 50000, 50500, 50872]
+    harga_sebelumnya: 48582,
+    nama_satuan: "kg",
+    nama_pasar: "Pasar Kawali"
   },
   {
     id: 3,
-    komoditi: "Bawang Putih",
-    satuan: "kg",
+    komoditi_id: 17,
+    nama: "Bawang Putih",
+    foto: "komoditi/January2024/yQatAEtva1RFMjzfsxkV.jpg",
+    tanggal: "2025-07-25",
     harga: 36035,
-    perubahan_persen: -1.29,
-    perubahan_nominal: -471,
-    trend_data: [37000, 36800, 36600, 36400, 36200, 36100, 36035]
+    harga_sebelumnya: 36506,
+    nama_satuan: "kg",
+    nama_pasar: "Pasar Kawali"
   },
   {
     id: 4,
-    komoditi: "Bawang Putih Cutting",
-    satuan: "kg",
-    harga: 43960,
-    perubahan_persen: 2.15,
-    perubahan_nominal: 925,
-    trend_data: [42500, 42800, 43000, 43200, 43500, 43750, 43960]
+    komoditi_id: 2,
+    nama: "Beras Medium",
+    foto: "komoditi/December2023/Mw3htpIO0hlY4XTb7ISZ.jpg",
+    tanggal: "2025-07-25",
+    harga: 13397,
+    harga_sebelumnya: 13512,
+    nama_satuan: "kg",
+    nama_pasar: "Pasar Kawali"
   },
   {
     id: 5,
-    komoditi: "Beras Medium",
-    satuan: "kg",
-    harga: 13397,
-    perubahan_persen: -0.85,
-    perubahan_nominal: -115,
-    trend_data: [13600, 13550, 13500, 13450, 13400, 13397, 13397]
-  },
-  {
-    id: 6,
-    komoditi: "Beras Premium",
-    satuan: "kg",
+    komoditi_id: 1,
+    nama: "Beras Premium",
+    foto: "komoditi/December2023/3LwwcT1mazHuUgTWcrwc.jpeg",
+    tanggal: "2025-07-25",
     harga: 14762,
-    perubahan_persen: 1.23,
-    perubahan_nominal: 179,
-    trend_data: [14500, 14550, 14600, 14650, 14700, 14730, 14762]
+    harga_sebelumnya: 14583,
+    nama_satuan: "kg",
+    nama_pasar: "Pasar Kawali"
   }
 ];
 
@@ -84,12 +85,18 @@ const Dashboard = () => {
 
   const filteredData = useMemo(() => {
     return priceData.filter((item) => {
-      const matchesSearch = item.komoditi.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSearch = item.nama?.toLowerCase().includes(searchQuery.toLowerCase()) || false;
+      
+      // Calculate percentage change
+      const percentChange = item.harga_sebelumnya > 0 
+        ? ((item.harga - item.harga_sebelumnya) / item.harga_sebelumnya) * 100 
+        : 0;
+      
       const matchesCondition = 
         selectedCondition === "all" ||
-        (selectedCondition === "naik" && item.perubahan_persen > 0) ||
-        (selectedCondition === "turun" && item.perubahan_persen < 0) ||
-        (selectedCondition === "tetap" && item.perubahan_persen === 0);
+        (selectedCondition === "naik" && percentChange > 0) ||
+        (selectedCondition === "turun" && percentChange < 0) ||
+        (selectedCondition === "tetap" && percentChange === 0);
       
       return matchesSearch && matchesCondition;
     });
@@ -171,18 +178,32 @@ const Dashboard = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredData.map((item) => (
-                <ProductCard
-                  key={item.id}
-                  id={item.id}
-                  name={item.komoditi}
-                  price={item.harga}
-                  unit={item.satuan}
-                  changePercent={item.perubahan_persen}
-                  changeAmount={item.perubahan_nominal}
-                  trendData={item.trend_data}
-                />
-              ))}
+              {filteredData.map((item) => {
+                // Calculate percentage and nominal change
+                const percentChange = item.harga_sebelumnya > 0 
+                  ? ((item.harga - item.harga_sebelumnya) / item.harga_sebelumnya) * 100 
+                  : 0;
+                const nominalChange = item.harga - item.harga_sebelumnya;
+                
+                // Create image URL if foto exists
+                const imageUrl = item.foto 
+                  ? `https://situ.ciamiskab.go.id/storage/${item.foto}`
+                  : undefined;
+                
+                return (
+                  <ProductCard
+                    key={item.id}
+                    id={item.id}
+                    name={item.nama}
+                    price={item.harga}
+                    unit={item.nama_satuan}
+                    changePercent={percentChange}
+                    changeAmount={nominalChange}
+                    image={imageUrl}
+                    trendData={[]} // No trend data in API response
+                  />
+                );
+              })}
             </div>
           )}
 

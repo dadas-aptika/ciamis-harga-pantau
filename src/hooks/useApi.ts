@@ -2,12 +2,14 @@ import { useQuery } from "@tanstack/react-query";
 
 interface PriceData {
   id: number;
-  komoditi: string;
-  satuan: string;
+  komoditi_id: number;
+  nama: string;
+  foto: string;
+  tanggal: string;
   harga: number;
-  perubahan_persen: number;
-  perubahan_nominal: number;
-  trend_data?: number[];
+  harga_sebelumnya: number;
+  nama_satuan: string;
+  nama_pasar: string;
 }
 
 interface CommodityData {

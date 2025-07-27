@@ -245,6 +245,7 @@ const Dashboard = () => {
                     changeAmount={nominalChange}
                     image={imageUrl}
                     trendData={[]} // No trend data in API response
+                    komoditiId={item.komoditi_id}
                   />
                   );
                 })}

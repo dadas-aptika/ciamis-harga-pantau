@@ -1,6 +1,8 @@
 import { TrendingUp, TrendingDown, Minus, Info } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { LineChart, Line, ResponsiveContainer } from 'recharts';
+import { useState } from "react";
+import PriceChartModal from "./PriceChartModal";
 
 interface ProductCardProps {
   id: number;
@@ -11,6 +13,7 @@ interface ProductCardProps {
   changeAmount: number;
   image?: string;
   trendData?: number[];
+  komoditiId?: number;
 }
 
 const ProductCard = ({
@@ -20,8 +23,40 @@ const ProductCard = ({
   changePercent,
   changeAmount,
   image,
-  trendData = []
+  trendData = [],
+  komoditiId
 }: ProductCardProps) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Generate mock chart data for demonstration
+  const generateChartData = () => {
+    const markets = ["Pasar Kawali", "Pasar Sindangkasih", "Pasar Banjarsari", "Pasar Ciamis Manis"];
+    const dates = [];
+    const today = new Date();
+    
+    // Generate dates for the last 30 days
+    for (let i = 29; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      dates.push(date.toISOString().split('T')[0]);
+    }
+    
+    return dates.map(date => {
+      const basePrice = price;
+      const dataPoint: any = { date };
+      
+      markets.forEach(market => {
+        // Generate realistic price variations
+        const variation = (Math.random() - 0.5) * 0.3; // ±15% variation
+        dataPoint[market] = Math.round(basePrice * (1 + variation));
+      });
+      
+      return dataPoint;
+    });
+  };
+
+  const chartData = generateChartData();
+  const markets = ["Pasar Kawali", "Pasar Sindangkasih", "Pasar Banjarsari", "Pasar Ciamis Manis"];
   const getTrendColor = () => {
     if (changePercent > 0) return "text-destructive";
     if (changePercent < 0) return "text-success";
@@ -74,7 +109,10 @@ const ProductCard = ({
               <h3 className="font-medium text-sm leading-tight text-foreground">
                 {name}
               </h3>
-              <Info className="w-4 h-4 text-muted-foreground flex-shrink-0 ml-2" />
+              <Info 
+                className="w-4 h-4 text-muted-foreground flex-shrink-0 ml-2 cursor-pointer hover:text-primary transition-colors" 
+                onClick={() => setIsModalOpen(true)}
+              />
             </div>
             
             <div className="text-lg font-semibold text-foreground mb-1">
@@ -135,6 +173,14 @@ const ProductCard = ({
           </div>
         </div>
       </CardContent>
+      
+      <PriceChartModal
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
+        productName={name}
+        chartData={chartData}
+        markets={markets}
+      />
     </Card>
   );
 };

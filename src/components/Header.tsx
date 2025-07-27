@@ -9,29 +9,31 @@ const Header = () => {
         <div className="flex items-center justify-between py-4">
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-warning rounded flex items-center justify-center">
-                <span className="text-xs font-bold">📊</span>
-              </div>
+              <img
+                src="https://res.cloudinary.com/dbvxzjo34/image/upload/v1753421112/aduhai/kuaraa_tf33y7.jpg"
+                alt="icon"
+                className="w-8 h-8 rounded object-cover"
+              />
               <div>
                 <div className="text-xs opacity-80">DASHBOARD</div>
-                <div className="text-lg font-bold">JABAR</div>
+                <div className="text-lg font-bold">SIMANIS</div>
               </div>
             </div>
             <div className="hidden md:flex items-center space-x-1 text-sm">
-              <span className="bg-warning w-2 h-2 rounded-full"></span>
+              {/* <span className="bg-warning w-2 h-2 rounded-full"></span>
               <span className="bg-white w-2 h-2 rounded-full opacity-60"></span>
-              <span className="bg-white w-2 h-2 rounded-full opacity-60"></span>
+              <span className="bg-white w-2 h-2 rounded-full opacity-60"></span> */}
             </div>
           </div>
-          
+
           <nav className="hidden md:flex items-center space-x-6 text-sm">
             <button className="hover:opacity-80 flex items-center space-x-1">
-              <span>Topik</span>
+              <span>Perkembangan Harga</span>
               <ChevronDown className="w-4 h-4" />
             </button>
-            <button className="hover:opacity-80">Eksplorasi Dashboard</button>
+            {/* <button className="hover:opacity-80">Eksplorasi Dashboard</button>
             <button className="hover:opacity-80">Tentang</button>
-            <button className="hover:opacity-80">Executive Dashboard</button>
+            <button className="hover:opacity-80">Executive Dashboard</button> */}
           </nav>
         </div>
       </div>

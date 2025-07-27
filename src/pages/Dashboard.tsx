@@ -77,14 +77,12 @@ const Dashboard = () => {
 
   const { data: apiData, isLoading, error } = usePriceData();
   
-  // Use API data if available, otherwise fallback to mock data - filter today only
+  // Use API data if available, otherwise fallback to mock data
   const priceData = useMemo(() => {
-    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
-    
     if (apiData && apiData.length > 0) {
-      return apiData.filter(item => item.tanggal === today);
+      return apiData;
     }
-    return mockData.filter(item => item.tanggal === today);
+    return mockData;
   }, [apiData]);
 
   // Get unique markets from data
@@ -105,11 +103,9 @@ const Dashboard = () => {
       const safeName = item?.nama || "";
       const matchesSearch = safeName.toLowerCase().includes(safeSearchQuery.toLowerCase());
       
-      // Market filter (first dropdown)
-      const matchesMarket = selectedMarket === "all" || item?.nama_pasar === selectedMarket;
-      
-      // Pasar filter (tab filter)
-      const matchesPasar = selectedPasar === "all" || item?.nama_pasar === selectedPasar;
+      // Market filter - use selectedPasar (from tabs) if not "all", otherwise use selectedMarket (from dropdown)
+      const activeMarketFilter = selectedPasar !== "all" ? selectedPasar : selectedMarket;
+      const matchesMarket = activeMarketFilter === "all" || item?.nama_pasar === activeMarketFilter;
       
       // Calculate percentage change safely
       const currentPrice = item?.harga || 0;
@@ -124,7 +120,7 @@ const Dashboard = () => {
         (selectedCondition === "turun" && percentChange < 0) ||
         (selectedCondition === "tetap" && percentChange === 0);
       
-      return matchesSearch && matchesMarket && matchesPasar && matchesCondition;
+      return matchesSearch && matchesMarket && matchesCondition;
     });
   }, [priceData, searchQuery, selectedMarket, selectedPasar, selectedCondition]);
 

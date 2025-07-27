@@ -77,12 +77,16 @@ const Dashboard = () => {
 
   const { data: apiData, isLoading, error } = usePriceData();
   
-  // Use API data if available, otherwise fallback to mock data
+  // Use API data if available, otherwise fallback to mock data - filter last week only
   const priceData = useMemo(() => {
+    const today = new Date();
+    const oneWeekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const oneWeekAgoStr = oneWeekAgo.toISOString().split('T')[0]; // YYYY-MM-DD format
+    
     if (apiData && apiData.length > 0) {
-      return apiData;
+      return apiData.filter(item => item.tanggal >= oneWeekAgoStr);
     }
-    return mockData;
+    return mockData.filter(item => item.tanggal >= oneWeekAgoStr);
   }, [apiData]);
 
   // Get unique markets from data

@@ -6,6 +6,8 @@ import Header from "@/components/Header";
 import FilterSection from "@/components/FilterSection";
 import CategoryTabs from "@/components/CategoryTabs";
 import ProductCard from "@/components/ProductCard";
+import ShareModal from "@/components/ShareModal";
+import Footer from "@/components/Footer";
 import { usePriceData } from "@/hooks/useApi";
 
 // Mock data untuk fallback dengan struktur API yang benar
@@ -73,6 +75,7 @@ const Dashboard = () => {
   const [selectedCondition, setSelectedCondition] = useState("all");
   const [selectedPasar, setSelectedPasar] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
   const itemsPerPage = 9;
 
   const { data: apiData, isLoading, error } = usePriceData();
@@ -168,7 +171,7 @@ const Dashboard = () => {
           <h1 className="text-2xl font-bold text-foreground">
             Dashboard Pangan Provinsi Jawa Barat
           </h1>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={() => setShareModalOpen(true)}>
             <Share className="w-4 h-4 mr-2" />
             Bagikan
           </Button>
@@ -297,6 +300,13 @@ const Dashboard = () => {
           )}
         </div>
       </div>
+      
+      <ShareModal 
+        open={shareModalOpen} 
+        onOpenChange={setShareModalOpen} 
+      />
+      
+      <Footer />
     </div>
   );
 };

@@ -20,21 +20,23 @@ const Perkembangan = () => {
     <div className="min-h-screen flex flex-col">
       <Header />
       
-      <main className="flex-1 container mx-auto px-4 py-8">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-foreground mb-2">
-            Perkembangan Harga Komoditas
-          </h1>
-          <p className="text-muted-foreground">
-            Dashboard analisis perkembangan harga komoditas dari berbagai pasar
-          </p>
+      <main className="flex-1">
+        <div className="container mx-auto px-4 py-8">
+          <div className="mb-6">
+            <h1 className="text-3xl font-bold text-foreground mb-2">
+              Perkembangan Harga Komoditas
+            </h1>
+            <p className="text-muted-foreground">
+              Dashboard analisis perkembangan harga komoditas dari berbagai pasar
+            </p>
+          </div>
         </div>
 
-        <div className="w-full">
+        <div className="w-full px-0">
           <div 
             className='tableauPlaceholder w-full' 
             id='viz1718257506765' 
-            style={{position: 'relative', width: '100%', height: '1200px'}}
+            style={{position: 'relative', width: '100vw', height: '100vh', minHeight: '800px'}}
             dangerouslySetInnerHTML={{
               __html: `
                 <noscript>
@@ -60,9 +62,10 @@ const Perkembangan = () => {
                 <script type='text/javascript'>
                   var divElement = document.getElementById('viz1718257506765');
                   var vizElement = divElement.getElementsByTagName('object')[0];
-                  vizElement.style.width='100%';
-                  vizElement.style.height='1200px';
-                  vizElement.style.minHeight='1200px';
+                  vizElement.style.width='100vw';
+                  vizElement.style.height='100vh';
+                  vizElement.style.minHeight='800px';
+                  vizElement.style.maxWidth='100%';
                   var scriptElement = document.createElement('script');
                   scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';
                   vizElement.parentNode.insertBefore(scriptElement, vizElement);

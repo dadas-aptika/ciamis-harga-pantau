@@ -30,11 +30,11 @@ const Perkembangan = () => {
           </p>
         </div>
 
-        <div className="bg-card rounded-lg p-6 shadow-sm">
+        <div className="bg-card rounded-lg shadow-sm w-full">
           <div 
-            className='tableauPlaceholder' 
+            className='tableauPlaceholder w-full min-h-[800px]' 
             id='viz1718257506765' 
-            style={{position: 'relative'}}
+            style={{position: 'relative', width: '100%', height: '100%'}}
             dangerouslySetInnerHTML={{
               __html: `
                 <noscript>
@@ -60,16 +60,8 @@ const Perkembangan = () => {
                 <script type='text/javascript'>
                   var divElement = document.getElementById('viz1718257506765');
                   var vizElement = divElement.getElementsByTagName('object')[0];
-                  if (divElement.offsetWidth > 800) { 
-                    vizElement.style.width='1024px';
-                    vizElement.style.height='2075px';
-                  } else if (divElement.offsetWidth > 100) { 
-                    vizElement.style.width='1024px';
-                    vizElement.style.height='2075px';
-                  } else { 
-                    vizElement.style.width='100%';
-                    vizElement.style.height='1977px';
-                  }
+                  vizElement.style.width='100%';
+                  vizElement.style.height='800px';
                   var scriptElement = document.createElement('script');
                   scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';
                   vizElement.parentNode.insertBefore(scriptElement, vizElement);

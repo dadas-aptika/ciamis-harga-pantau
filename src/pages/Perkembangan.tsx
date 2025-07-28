@@ -1,25 +1,67 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 const Perkembangan = () => {
+  const vizContainerRef = useRef(null);
+
   useEffect(() => {
     // Load Tableau script when component mounts
-    const script = document.createElement('script');
-    script.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';
+    const script = document.createElement("script");
+    script.src = "https://public.tableau.com/javascripts/api/viz_v1.js";
     script.async = true;
     document.head.appendChild(script);
 
+    // Function to adjust iframe size
+    const adjustVizSize = () => {
+      if (vizContainerRef.current) {
+        const containerWidth = vizContainerRef.current.offsetWidth;
+        const containerHeight = vizContainerRef.current.offsetHeight;
+
+        const iframe = vizContainerRef.current.querySelector("iframe");
+        if (iframe) {
+          iframe.style.width = "100%";
+          iframe.style.height = `${containerHeight}px`;
+          iframe.style.minHeight = "800px";
+          iframe.style.border = "none";
+        }
+      }
+    };
+
+    // Initial adjustment
+    adjustVizSize();
+
+    // Set up mutation observer to detect when iframe is loaded
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.addedNodes.length) {
+          adjustVizSize();
+        }
+      });
+    });
+
+    if (vizContainerRef.current) {
+      observer.observe(vizContainerRef.current, {
+        childList: true,
+        subtree: true,
+      });
+    }
+
+    // Adjust on window resize
+    window.addEventListener("resize", adjustVizSize);
+
     return () => {
-      // Cleanup script when component unmounts
+      // Cleanup
       document.head.removeChild(script);
+      window.removeEventListener("resize", adjustVizSize);
+      observer.disconnect();
     };
   }, []);
 
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      
+
       <main className="flex-1 container mx-auto px-4 py-8">
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-foreground mb-2">
@@ -30,11 +72,10 @@ const Perkembangan = () => {
           </p>
         </div>
 
-        <div className="bg-card rounded-lg p-6 shadow-sm w-full">
-          <div 
-            className='tableauPlaceholder w-full' 
-            id='viz1718257506765' 
-            style={{position: 'relative', width: '100%', height: '800px'}}
+        <div className="bg-card rounded-lg p-6 shadow-sm w-full h-full">
+          <div
+            ref={vizContainerRef}
+            className="w-full h-full min-h-[800px]"
             dangerouslySetInnerHTML={{
               __html: `
                 <noscript>
@@ -56,29 +97,21 @@ const Perkembangan = () => {
                   <param name='display_overlay' value='yes' />
                   <param name='display_count' value='yes' />
                   <param name='language' value='en-US' />
+                  <param name='filter' value='iframeSizedToWindow=true' />
                 </object>
                 <script type='text/javascript'>
-                  setTimeout(function() {
-                    var divElement = document.getElementById('viz1718257506765');
-                    if (divElement) {
-                      var vizElement = divElement.getElementsByTagName('object')[0];
-                      if (vizElement) {
-                        vizElement.style.width='100%';
-                        vizElement.style.height='800px';
-                        vizElement.style.display='block';
-                      }
-                    }
-                  }, 1000);
-                  
-                  var divElement = document.getElementById('viz1718257506765');
+                  var divElement = document.currentScript.parentElement;
                   var vizElement = divElement.getElementsByTagName('object')[0];
-                  vizElement.style.width='100%';
-                  vizElement.style.height='800px';
+                  
+                  vizElement.style.width = '100%';
+                  vizElement.style.height = '100%';
+                  vizElement.style.minHeight = '800px';
+                  
                   var scriptElement = document.createElement('script');
                   scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';
                   vizElement.parentNode.insertBefore(scriptElement, vizElement);
                 </script>
-              `
+              `,
             }}
           />
         </div>

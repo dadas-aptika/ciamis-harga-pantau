@@ -1,6 +1,7 @@
 import { Search, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   return (
@@ -27,10 +28,13 @@ const Header = () => {
           </div>
 
           <nav className="hidden md:flex items-center space-x-6 text-sm">
-            <button className="hover:opacity-80 flex items-center space-x-1">
+            <Link 
+              to="/perkembangan" 
+              className="hover:opacity-80 flex items-center space-x-1"
+            >
               <span>Perkembangan Harga</span>
               <ChevronDown className="w-4 h-4" />
-            </button>
+            </Link>
             {/* <button className="hover:opacity-80">Eksplorasi Dashboard</button>
             <button className="hover:opacity-80">Tentang</button>
             <button className="hover:opacity-80">Executive Dashboard</button> */}

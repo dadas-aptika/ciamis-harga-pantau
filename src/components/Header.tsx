@@ -10,11 +10,13 @@ const Header = () => {
         <div className="flex items-center justify-between py-4">
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
-              <img
-                src="https://res.cloudinary.com/dbvxzjo34/image/upload/v1753421112/aduhai/kuaraa_tf33y7.jpg"
-                alt="icon"
-                className="w-8 h-8 rounded object-cover"
-              />
+              <Link to="/" className="flex items-center space-x-2">
+                <img
+                  src="https://res.cloudinary.com/dbvxzjo34/image/upload/v1753421112/aduhai/kuaraa_tf33y7.jpg"
+                  alt="icon"
+                  className="w-8 h-8 rounded object-cover"
+                />
+              </Link>
               <div>
                 <div className="text-xs opacity-80">DASHBOARD</div>
                 <div className="text-lg font-bold">SIMANIS</div>
@@ -28,8 +30,8 @@ const Header = () => {
           </div>
 
           <nav className="hidden md:flex items-center space-x-6 text-sm">
-            <Link 
-              to="/perkembangan" 
+            <Link
+              to="/perkembangan"
               className="hover:opacity-80 flex items-center space-x-1"
             >
               <span>Perkembangan Harga</span>

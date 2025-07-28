@@ -304,17 +304,72 @@ const Dashboard = () => {
                   </Button>
 
                   <div className="flex gap-1">
-                    {Array.from({ length: totalPages }, (_, i) => (
+                    {/* Always show first page */}
+                    <Button
+                      variant={currentPage === 1 ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setCurrentPage(1)}
+                      className="w-8 h-8 p-0"
+                    >
+                      1
+                    </Button>
+
+                    {/* Show ellipsis if current page is far from start */}
+                    {currentPage > 3 && <span className="px-2">...</span>}
+
+                    {/* Show one page before current */}
+                    {currentPage > 2 && (
                       <Button
-                        key={i + 1}
-                        variant={currentPage === i + 1 ? "default" : "outline"}
+                        variant="outline"
                         size="sm"
-                        onClick={() => setCurrentPage(i + 1)}
+                        onClick={() => setCurrentPage(currentPage - 1)}
                         className="w-8 h-8 p-0"
                       >
-                        {i + 1}
+                        {currentPage - 1}
                       </Button>
-                    ))}
+                    )}
+
+                    {/* Show current page if not first or last */}
+                    {currentPage > 1 && currentPage < totalPages && (
+                      <Button
+                        variant="default"
+                        size="sm"
+                        className="w-8 h-8 p-0"
+                      >
+                        {currentPage}
+                      </Button>
+                    )}
+
+                    {/* Show one page after current */}
+                    {currentPage < totalPages - 1 && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        className="w-8 h-8 p-0"
+                      >
+                        {currentPage + 1}
+                      </Button>
+                    )}
+
+                    {/* Show ellipsis if current page is far from end */}
+                    {currentPage < totalPages - 2 && (
+                      <span className="px-2">...</span>
+                    )}
+
+                    {/* Always show last page */}
+                    {totalPages > 1 && (
+                      <Button
+                        variant={
+                          currentPage === totalPages ? "default" : "outline"
+                        }
+                        size="sm"
+                        onClick={() => setCurrentPage(totalPages)}
+                        className="w-8 h-8 p-0"
+                      >
+                        {totalPages}
+                      </Button>
+                    )}
                   </div>
 
                   <Button

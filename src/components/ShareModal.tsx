@@ -17,9 +17,9 @@ interface ShareModalProps {
 
 const ShareModal = ({ open, onOpenChange }: ShareModalProps) => {
   const { toast } = useToast();
-  const [pageLink] = useState("https://simanis,ciamiskab.go.id");
+  const [pageLink] = useState("https://simanis.ciamiskab.go.id");
   const [embedCode] = useState(
-    '<iframe src="https://simanis,ciamiskab.go.id" width="100%" height="600"></iframe>'
+    '<iframe src="https://simanis.ciamiskab.go.id" width="100%" height="600"></iframe>'
   );
 
   const copyToClipboard = async (text: string, type: string) => {

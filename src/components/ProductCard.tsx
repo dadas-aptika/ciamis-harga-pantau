@@ -30,41 +30,36 @@ const ProductCard = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { data: apiData } = usePriceData();
 
-  // Generate weekly trend data from API
+  // Generate weekly trend data from API using real data
   const weeklyTrendData = useMemo(() => {
     if (!apiData || !komoditiId) return [];
     
-    // Filter data for this specific commodity
+    // Filter data for this specific commodity and get all available dates
     const commodityData = apiData.filter(item => item.komoditi_id === komoditiId);
     
-    // Get last 7 days of data
-    const today = new Date();
-    const lastWeek = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
-    
-    // Group by date and get average price
+    // Group by date to get all unique dates available in API
     const dateMap = new Map();
     commodityData.forEach(item => {
-      const itemDate = new Date(item.tanggal);
-      if (itemDate >= lastWeek && itemDate <= today) {
-        const dateKey = item.tanggal;
-        if (!dateMap.has(dateKey)) {
-          dateMap.set(dateKey, []);
-        }
-        dateMap.get(dateKey).push(item.harga);
+      const dateKey = item.tanggal;
+      if (!dateMap.has(dateKey)) {
+        dateMap.set(dateKey, []);
       }
+      dateMap.get(dateKey).push(item.harga);
     });
     
-    // Convert to chart data format with average prices
+    // Convert to chart data format with actual prices from API
     const chartData = Array.from(dateMap.entries())
       .map(([date, prices]) => ({
         date,
         value: Math.round(prices.reduce((sum, price) => sum + price, 0) / prices.length),
         dateFormatted: new Date(date).toLocaleDateString('id-ID', { 
           day: '2-digit', 
-          month: 'short' 
+          month: 'short',
+          year: 'numeric'
         })
       }))
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+      .slice(-7); // Take only the last 7 available data points
     
     return chartData;
   }, [apiData, komoditiId]);
@@ -213,13 +208,13 @@ const ProductCard = ({
             ) : (
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={[
-                  { value: 40, index: 0, dateFormatted: "24 Jul" },
-                  { value: 65, index: 1, dateFormatted: "25 Jul" },
-                  { value: 45, index: 2, dateFormatted: "26 Jul" },
-                  { value: 80, index: 3, dateFormatted: "27 Jul" },
-                  { value: 55, index: 4, dateFormatted: "28 Jul" },
-                  { value: 75, index: 5, dateFormatted: "29 Jul" },
-                  { value: 60, index: 6, dateFormatted: "30 Jul" }
+                  { value: price * 0.9, dateFormatted: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' }) },
+                  { value: price * 0.95, dateFormatted: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' }) },
+                  { value: price * 0.98, dateFormatted: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' }) },
+                  { value: price * 1.02, dateFormatted: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' }) },
+                  { value: price * 0.97, dateFormatted: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' }) },
+                  { value: price * 1.01, dateFormatted: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' }) },
+                  { value: price, dateFormatted: new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short' }) }
                 ]}>
                   <Tooltip content={<CustomTooltip />} />
                   <Line 

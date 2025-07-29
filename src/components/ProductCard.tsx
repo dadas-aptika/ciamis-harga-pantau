@@ -1,8 +1,9 @@
 import { TrendingUp, TrendingDown, Minus, Info } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { LineChart, Line, ResponsiveContainer } from 'recharts';
-import { useState } from "react";
+import { LineChart, Line, ResponsiveContainer, Tooltip } from 'recharts';
+import { useState, useMemo } from "react";
 import PriceChartModal from "./PriceChartModal";
+import { usePriceData } from "@/hooks/useApi";
 
 interface ProductCardProps {
   id: number;
@@ -27,6 +28,46 @@ const ProductCard = ({
   komoditiId
 }: ProductCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { data: apiData } = usePriceData();
+
+  // Generate weekly trend data from API
+  const weeklyTrendData = useMemo(() => {
+    if (!apiData || !komoditiId) return [];
+    
+    // Filter data for this specific commodity
+    const commodityData = apiData.filter(item => item.komoditi_id === komoditiId);
+    
+    // Get last 7 days of data
+    const today = new Date();
+    const lastWeek = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+    
+    // Group by date and get average price
+    const dateMap = new Map();
+    commodityData.forEach(item => {
+      const itemDate = new Date(item.tanggal);
+      if (itemDate >= lastWeek && itemDate <= today) {
+        const dateKey = item.tanggal;
+        if (!dateMap.has(dateKey)) {
+          dateMap.set(dateKey, []);
+        }
+        dateMap.get(dateKey).push(item.harga);
+      }
+    });
+    
+    // Convert to chart data format with average prices
+    const chartData = Array.from(dateMap.entries())
+      .map(([date, prices]) => ({
+        date,
+        value: Math.round(prices.reduce((sum, price) => sum + price, 0) / prices.length),
+        dateFormatted: new Date(date).toLocaleDateString('id-ID', { 
+          day: '2-digit', 
+          month: 'short' 
+        })
+      }))
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    
+    return chartData;
+  }, [apiData, komoditiId]);
 
   // Generate mock chart data for demonstration
   const generateChartData = () => {
@@ -83,6 +124,24 @@ const ProductCard = ({
     return new Intl.NumberFormat('id-ID').format(Math.abs(amount));
   };
 
+  // Custom tooltip component
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      return (
+        <div className="bg-background border border-border rounded-lg p-3 shadow-lg">
+          <p className="font-medium text-foreground">
+            Rp {formatPrice(payload[0].value)}
+          </p>
+          <p className="text-sm text-muted-foreground">
+            {data.dateFormatted}
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <Card className="h-full shadow-sm hover:shadow-md transition-shadow duration-200">
       <CardContent className="p-4">
@@ -137,35 +196,39 @@ const ProductCard = ({
             </span>
           </div>
           <div className="h-8 w-full">
-            {trendData.length > 0 ? (
+            {weeklyTrendData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={trendData.map((value, index) => ({ value, index }))}>
+                <LineChart data={weeklyTrendData}>
+                  <Tooltip content={<CustomTooltip />} />
                   <Line 
                     type="monotone" 
                     dataKey="value" 
                     stroke={changePercent > 0 ? "#ef4444" : changePercent < 0 ? "#22c55e" : "#3b82f6"}
                     strokeWidth={2}
-                    dot={false}
+                    dot={{ fill: changePercent > 0 ? "#ef4444" : changePercent < 0 ? "#22c55e" : "#3b82f6", r: 2 }}
+                    activeDot={{ r: 4, fill: changePercent > 0 ? "#ef4444" : changePercent < 0 ? "#22c55e" : "#3b82f6" }}
                   />
                 </LineChart>
               </ResponsiveContainer>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={[
-                  { value: 40, index: 0 },
-                  { value: 65, index: 1 },
-                  { value: 45, index: 2 },
-                  { value: 80, index: 3 },
-                  { value: 55, index: 4 },
-                  { value: 75, index: 5 },
-                  { value: 60, index: 6 }
+                  { value: 40, index: 0, dateFormatted: "24 Jul" },
+                  { value: 65, index: 1, dateFormatted: "25 Jul" },
+                  { value: 45, index: 2, dateFormatted: "26 Jul" },
+                  { value: 80, index: 3, dateFormatted: "27 Jul" },
+                  { value: 55, index: 4, dateFormatted: "28 Jul" },
+                  { value: 75, index: 5, dateFormatted: "29 Jul" },
+                  { value: 60, index: 6, dateFormatted: "30 Jul" }
                 ]}>
+                  <Tooltip content={<CustomTooltip />} />
                   <Line 
                     type="monotone" 
                     dataKey="value" 
                     stroke={changePercent > 0 ? "#ef4444" : changePercent < 0 ? "#22c55e" : "#3b82f6"}
                     strokeWidth={2}
-                    dot={false}
+                    dot={{ fill: changePercent > 0 ? "#ef4444" : changePercent < 0 ? "#22c55e" : "#3b82f6", r: 2 }}
+                    activeDot={{ r: 4, fill: changePercent > 0 ? "#ef4444" : changePercent < 0 ? "#22c55e" : "#3b82f6" }}
                   />
                 </LineChart>
               </ResponsiveContainer>

@@ -1,3 +1,4 @@
+
 import { Search, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,9 +26,10 @@ const FilterSection = ({
   return (
     <div className="bg-white py-6">
       <div className="container mx-auto px-4">
-        <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
-          <div className="flex items-center space-x-4 w-full lg:w-auto">
-            <div className="relative flex-1 lg:w-80">
+        <div className="flex flex-col gap-4">
+          {/* Search Section */}
+          <div className="flex items-center space-x-4 w-full">
+            <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <Input
                 placeholder="Cari Komoditas"
@@ -36,16 +38,17 @@ const FilterSection = ({
                 className="pl-10"
               />
             </div>
-            <Button className="bg-primary hover:bg-primary/90">
+            <Button className="bg-primary hover:bg-primary/90 flex-shrink-0">
               <Search className="w-4 h-4" />
             </Button>
           </div>
           
-          <div className="flex items-center gap-4 w-full lg:w-auto">
-            <div className="flex items-center gap-2">
+          {/* Filters Section */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 flex-1">
               <span className="text-sm font-medium whitespace-nowrap">Pilih Pasar</span>
               <Select value={selectedMarket} onValueChange={setSelectedMarket}>
-                <SelectTrigger className="w-48">
+                <SelectTrigger className="w-full sm:w-48">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -57,10 +60,10 @@ const FilterSection = ({
               </Select>
             </div>
             
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 flex-1">
               <span className="text-sm font-medium whitespace-nowrap">Kondisi Harga</span>
               <Select value={selectedCondition} onValueChange={setSelectedCondition}>
-                <SelectTrigger className="w-32">
+                <SelectTrigger className="w-full sm:w-32">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -74,7 +77,7 @@ const FilterSection = ({
           </div>
         </div>
         
-        <div className="mt-4 flex items-center gap-4">
+        <div className="mt-4 flex flex-wrap items-center gap-4">
           <div className="flex items-center gap-2 text-sm">
             <div className="w-3 h-3 bg-success rounded-full"></div>
             <span>Harga Turun</span>
